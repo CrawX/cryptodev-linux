@@ -111,6 +111,7 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
 	const char *alg_name = NULL;
 	const char *hash_name = NULL;
 	int hmac_mode = 1, stream = 0, aead = 0;
+	int page_count = DEFAULT_PREALLOC_PAGES;
 	/*
 	 * With composite aead ciphers, only ckey is used and it can cover all the
 	 * structure space; otherwise both keys may be used simultaneously but they
@@ -283,7 +284,10 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
 	                                          ses_new->hdata.alignmask);
 	ddebug(2, "got alignmask %d", ses_new->alignmask);
 
-	ses_new->array_size = DEFAULT_PREALLOC_PAGES;
+	if(sop->preallocpages > 0) {
+		page_count = sop->preallocpages;
+	}
+	for(ses_new->array_size = 1;ses_new->array_size < page_count;ses_new->array_size *= 2);
 	ddebug(2, "preallocating for %d user pages", ses_new->array_size);
 	ses_new->pages = kzalloc(ses_new->array_size *
 			sizeof(struct page *), GFP_KERNEL);

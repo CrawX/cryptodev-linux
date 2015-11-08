@@ -89,6 +89,7 @@ struct session_op {
 	__u8	__user *mackey;
 
 	__u32	ses;		/* session identifier */
+	__u32	preallocpages;	/* number of pages to preallocate, defaults to DEFAULT_PREALLOC_PAGES */
 };
 
 struct session_info_op {
